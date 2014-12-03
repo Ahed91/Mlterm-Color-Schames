@@ -1,0 +1,46 @@
+##########################
+####### SPECIAL NOTES :
+## 
+##---- Everything after # is ignored
+##
+##---- Mouse Buttons (for right hand)
+##-- Button1 is left button (touch)
+##-- Button2 is middle button (wheel/ touch by two fingers)
+##-- Button3 is right button (touch by three fingers)
+##-- Button4 is scroll up
+##-- Button5 is scroll down
+##
+
+#####  Switch conversion mode of m17n library and  kdb  input  methods.
+# Control+a=IM_HOTKEY
+
+##### Control mlterm Screens
+F1=OPEN_SCREEN
+F2 = OPEN_PTY
+F3 = NEXT_PTY
+F4 = PREV_PTY
+
+##### Paste Clipboard/primary
+Control+v=INSERT_SELECTION
+
+##### Start backscroll mode
+#Shift+Prior=PAGE_UP
+#Shift+Next=PAGE_DOWN
+#Shift+Up=SCROLL_UP
+#Shift+Down=SCROLL_DOWN
+
+##### Send custom text
+# Control+a="HELO WORLD"
+
+##### Send mlterm control sequence to change it's behavior
+# Control+a="proto:encoding=utf8"
+
+##### Execute Command/Shell script or other executable with the selected text as argument
+##### select any text and press Control+a
+Control+a="proto:fontsize=20"
+
+##### Run mlterm-menu the default is Control+Button1 
+Button3="menu:mlterm-menu"
+
+##### Run mlterm GUI-CONFIGURATOR the default is Control+Button3
+Control+Button3 = "menu:mlconfig"
