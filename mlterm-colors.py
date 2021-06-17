@@ -9,16 +9,17 @@ import subprocess
 
 def get():
     "Get colorschames"
-    if not os.path.exists(os.path.expanduser('~/.mlterm/colorschames')):
-        os.makedirs(os.path.expanduser('~/.mlterm/colorschames'))
-        if os.path.exists('/tmp/mlterm-temp'):
-            shutil.rmtree('/tmp/mlterm-temp')
-        subprocess.call('git clone --depth 1 https://github.com/Ahed91/rtlize --branch master --single-branch /tmp/mlterm-temp', shell=True)
-        data_folder = '/tmp/mlterm-temp/mlterm/colorschames' 
+    os.makedirs(os.path.expanduser('~/.mlterm/colorschames'))
+    data_folder = './mlterm/colorschames' 
     dest_folder = os.path.expanduser('~/.mlterm/colorschames')
     for _ in os.listdir(data_folder):
         __ = os.path.join(data_folder, _)
         shutil.copy(__, dest_folder)
+
+def list_colorschemes():
+    colorschame_list = os.listdir(os.path.expanduser('~/.mlterm/colorschames'))
+    for cs in colorschame_list:
+        print(cs)
 
 def check_color(color):
     colorschame_list = os.listdir(os.path.expanduser('~/.mlterm/colorschames'))
@@ -54,6 +55,8 @@ def set_color(name):
     colors_path = os.path.expanduser('~/.mlterm/colorschames')
     main_path = os.path.expanduser('~/.mlterm/main')
     color_path = os.path.join(colors_path, name)
+    lines=""
+
     with open(color_path, 'r') as f :
         data = f.readlines()
     with open(os.path.expanduser('~/.mlterm/color'), 'w') as f :
@@ -63,8 +66,10 @@ def set_color(name):
     for i,item in enumerate(data[16:23]):
         D[i] = item
 
-    with open(main_path, 'r') as f :
-        lines = f.readlines()
+    if os.path.exists(main_path):
+        with open(main_path, 'r') as f :
+            lines = f.readlines()
+
     with open(main_path, 'w') as f :
         for line in lines:
             if re.findall('^fg_color.*', line):
@@ -121,15 +126,20 @@ def main():
     # Parser Options
     parser = argparse.ArgumentParser()
     parser.add_argument('-c','--colorschame', help="choose colorschame to apply on mlterm")
+    parser.add_argument('-l','--list', help="list colorschames", action="store_true")
     #parser.add_argument('--pic', help="set wallpaper for mlterm", action="store_true")
     args = parser.parse_args()
 
     if not os.path.exists(os.path.expanduser('~/.mlterm/colorschames')):
         get()
 
+    if args.list:
+        list_colorschemes()
+        exit()
+
     [name,legal]=check_color(args.colorschame)
     if not legal:
-        print 'Invalid or Unavailable Colorschame Name '
+        print('Invalid or Unavailable Colorschame Name ')
 
     if legal:
         set_color(name)
