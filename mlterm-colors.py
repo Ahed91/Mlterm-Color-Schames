@@ -77,27 +77,6 @@ def set_color(name):
             if re.findall("^ul_color.*", line):
                 f.write(re.sub("^ul_color.*", D.pop(6).replace("\n", ""), line))
                 continue
-            if re.findall("^#fg_color.*", line):
-                f.write(re.sub("^#fg_color.*", D.pop(0).replace("\n", ""), line))
-                continue
-            if re.findall("^#bg_color.*", line):
-                f.write(re.sub("^#bg_color.*", D.pop(1).replace("\n", ""), line))
-                continue
-            if re.findall("^#cursor_bg_color.*", line):
-                f.write(re.sub("^#cursor_bg_color.*", D.pop(2).replace("\n", ""), line))
-                continue
-            if re.findall("^#cursor_fg_color.*", line):
-                f.write(re.sub("^#cursor_fg_color.*", D.pop(3).replace("\n", ""), line))
-                continue
-            if re.findall("^#bd_color.*", line):
-                f.write(re.sub("^#bd_color.*", D.pop(4).replace("\n", ""), line))
-                continue
-            if re.findall("^#it_color.*", line):
-                f.write(re.sub("^#it_color.*", D.pop(5).replace("\n", ""), line))
-                continue
-            if re.findall("^#ul_color.*", line):
-                f.write(re.sub("^#ul_color.*", D.pop(6).replace("\n", ""), line))
-                continue
             # if re.findall("^wall_picture.*", line):
             #     f.write(line.replace("~", os.path.expanduser("~")))
             #     continue
