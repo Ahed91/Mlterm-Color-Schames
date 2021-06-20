@@ -25,34 +25,13 @@ def list_colorschemes():
 
 
 def check_color(color):
+    color = color.lower().replace(".color", "")
     colorschame_list = os.listdir(os.path.expanduser("~/.mlterm/colorschames"))
-    legal_color = False
     for idx, item in enumerate(colorschame_list):
-        if color == item:
-            legal_color = True
-            return colorschame_list[idx], legal_color
-        item = item.lower()
-        if color == item:
-            legal_color = True
-            return colorschame_list[idx], legal_color
-        item = item.upper()
-        if color == item:
-            legal_color = True
-            return colorschame_list[idx], legal_color
-        item = item.replace(".COLOR", "")
-        if color == item:
-            legal_color = True
-            return colorschame_list[idx], legal_color
-        item = item.lower()
-        if color == item:
-            legal_color = True
-            return colorschame_list[idx], legal_color
-        item = item.replace(item[0], item[0].upper())
-        if color == item:
-            legal_color = True
-            return colorschame_list[idx], legal_color
+        if color == item.lower().replace(".color", ""):
+            return colorschame_list[idx]
 
-    return "none", legal_color
+    return None
 
 
 def set_color(name):
@@ -63,6 +42,7 @@ def set_color(name):
 
     with open(color_path, "r") as f:
         data = f.readlines()
+
     with open(os.path.expanduser("~/.mlterm/color"), "w") as f:
         f.writelines(data[0:16])
 
@@ -118,9 +98,9 @@ def set_color(name):
             if re.findall("^#ul_color.*", line):
                 f.write(re.sub("^#ul_color.*", D.pop(6).replace("\n", ""), line))
                 continue
-            if re.findall("^wall_picture.*", line):
-                f.write(line.replace("~", os.path.expanduser("~")))
-                continue
+            # if re.findall("^wall_picture.*", line):
+            #     f.write(line.replace("~", os.path.expanduser("~")))
+            #     continue
             f.write(line)
         for _ in D.keys():
             f.write(D[_])
@@ -144,12 +124,12 @@ def main():
         list_colorschemes()
         exit()
 
-    [name, legal] = check_color(args.colorschame)
-    if not legal:
-        print("Invalid or Unavailable Colorschame Name ")
+    colorschame = check_color(args.colorschame)
+    if not colorschame:
+        print("Invalid or unavailable colorschame name")
 
-    if legal:
-        set_color(name)
+    if colorschame:
+        set_color(colorschame)
 
 
 if __name__ == "__main__":
