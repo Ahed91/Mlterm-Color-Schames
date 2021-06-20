@@ -4,84 +4,74 @@
 """
 convert colorshame from xrdb to mlterm
 """
+from pathlib import Path
 import re
 import os
 
-# Get the files
-files = os.listdir('../xrdb/')
 
-# every term in xrdb and its opposite in mlterm
-dict = {
-    'Ansi_0_Color': 'black',
-    'Ansi_1_Color': 'red',
-    'Ansi_2_Color': 'green',
-    'Ansi_3_Color': 'yellow',
-    'Ansi_4_Color': 'blue',
-    'Ansi_5_Color': 'magenta',
-    'Ansi_6_Color': 'cyan',
-    'Ansi_7_Color': 'white',
-    'Ansi_8_Color': 'hl_black',
-    'Ansi_9_Color': 'hl_red',
-    'Ansi_10_Color': 'hl_green',
-    'Ansi_11_Color': 'hl_yellow',
-    'Ansi_12_Color': 'hl_blue',
-    'Ansi_13_Color': 'hl_magenta',
-    'Ansi_14_Color': 'hl_cyan',
-    'Ansi_15_Color': 'hl_white',
-    'Background_Color': 'bg_color',
-    'Bold_Color': 'bd_color',
-    'Cursor_Color': 'cursor_bg_color',
-    'Cursor_Text_Color': 'cursor_fg_color',
-    'Foreground_Color': 'fg_color',
-    'Selected_Text_Color': 'it_color',
-    'Selection_Color': 'ul_color'
-}
+def convert_xrdb_to_list(line):
+    key = re.split(r'_Color', line)[0].replace('#define ', '')
+    value = re.split(r'_Color', line)[1].strip()
+    return [key, value]
 
-for i in range(116):
-    # read xrdb file
-    with open('../xrdb/%s' % files[i], 'r') as f:
-        # make new file the same name but differnet ext.
-        new_file = files[i].replace('xrdb', 'color')
+
+def convert(xrdb_path):
+    xrdb_mlterm_mapping = {
+        'Ansi_0': 'black',
+        'Ansi_1': 'red',
+        'Ansi_2': 'green',
+        'Ansi_3': 'yellow',
+        'Ansi_4': 'blue',
+        'Ansi_5': 'magenta',
+        'Ansi_6': 'cyan',
+        'Ansi_7': 'white',
+        'Ansi_8': 'hl_black',
+        'Ansi_9': 'hl_red',
+        'Ansi_10': 'hl_green',
+        'Ansi_11': 'hl_yellow',
+        'Ansi_12': 'hl_blue',
+        'Ansi_13': 'hl_magenta',
+        'Ansi_14': 'hl_cyan',
+        'Ansi_15': 'hl_white',
+        'Foreground': 'fg_color',
+        'Background': 'bg_color',
+        # 'Badge': None,
+        'Cursor': 'cursor_bg_color',
+        # 'Cursor_Guide': None,
+        'Cursor_Text': 'cursor_fg_color',
+        'Bold': 'bd_color',
+        # 'Link': None,
+        'Selected_Text': 'it_color',
+        'Selection': 'ul_color'
+    }
+
+    for file in xrdb_path.glob('*.xrdb'):
+        # read xrdb file
+        with open('../xrdb/%s' % file, 'r') as f:
+            data = f.readlines()
+
+        data = list(map(convert_xrdb_to_list, data))
+        current_xrdb_color = {item[0]: item[1] for item in data}
+        current_mlterm_color = {}
+
+        for key in xrdb_mlterm_mapping:
+            if key in current_xrdb_color:
+                current_mlterm_color[xrdb_mlterm_mapping[key]] = current_xrdb_color[key]
+
+        current_mlterm_color_list = [k + "=" + v for k, v in current_mlterm_color.items()]
+        current_mlterm_color_string = "\n".join(current_mlterm_color_list)
+
+        new_file = file.name.replace('xrdb', 'color')
         # open mlterm color file for write
-        with open(new_file, 'w') as new_f:
-            for line in f.readlines():
-                # Delelte '#define' string
-                line = line.replace('#define ', '')
-                # replace space with =
-                line = line.replace(' ', '=')
-                # use re to match right expression with its mlterm opposite
-                match = re.findall('(.*_Color)', line)[0]
-                line = line.replace(match, dict[match])
-                # write line
-                new_f.writelines(line)
+        with open('../xrdb/' + new_file, 'w') as new_f:
+            new_f.write(current_mlterm_color_string)
 
-files = os.listdir('.')
-data = []
 
-for i in range(116):
-    with open(files[i], 'r') as f:
-        data = f.readlines()
-        data.insert(2, data[8])
-        data.insert(3, data[10])
-        data.insert(4, data[12])
-        data.insert(5, data[14])
-        data.insert(6, data[16])
-        data.insert(7, data[18])
-        data.insert(8, data[20])
-        data.insert(9, data[22])
-        print data, files[i]
-        data.insert(24, data[28])
-        data.insert(29, data[26])
-        data.pop(16)
-        data.pop(16)
-        data.pop(16)
-        data.pop(16)
-        data.pop(16)
-        data.pop(16)
-        data.pop(16)
-        data.pop(16)
-        data.pop(18)
-        data.pop(21)
+def main():
+    # Set xrdb folder path
+    xrdb_path = Path('../xrdb/')
 
-    with open(files[i], 'w') as f:
-        f.writelines(data)
+    convert(xrdb_path)
+
+if __name__ == "__main__":
+    main()
